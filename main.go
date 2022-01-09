@@ -1,6 +1,13 @@
 // main.go
 package main
 
+import (
+	"fmt"
+	"runtime"
+)
+
+var version = "dev"
+
 func main() {
-	println("Ba dum, tss!")
+	fmt.Println("example", version, runtime.GOOS, runtime.GOARCH)
 }
