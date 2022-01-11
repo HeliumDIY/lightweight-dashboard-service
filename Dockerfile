@@ -1,5 +1,5 @@
 # Dockerfile
 FROM alpine
-COPY goreleaser-docker-manifest-actions-example \
-    /usr/bin/goreleaser-docker-manifest-actions-example
-ENTRYPOINT ["/usr/bin/goreleaser-docker-manifest-actions-example"]
+COPY lightweight-dashboard \
+    /lightweight-dashboard
+ENTRYPOINT ["/lightweight-dashboard"]

@@ -1,5 +1,6 @@
 # This is an example .goreleaser.yml file with some sensible defaults.
 # Make sure to check the documentation at https://goreleaser.com
+project_name: lightweight-dashboard
 before:
   hooks:
     # You may remove this if you don't use go modules.
@@ -10,67 +11,117 @@ builds:
   - env:
       - CGO_ENABLED=0
     goos:
-      - linux
-      - windows
-      - darwin
+    - linux
+    - windows
+    - darwin
     goarch:
-      - arm64
-      - amd64
-archives:
-  - replacements:
-      darwin: Darwin
-      linux: Linux
-      windows: Windows
-      386: i386
-      amd64: x86_64
-checksum:
-  name_template: 'checksums.txt'
-snapshot:
-  name_template: "{{ incpatch .Version }}-next"
+    - arm64
+    - amd64
 changelog:
   sort: asc
   filters:
     exclude:
       - '^docs:'
       - '^test:'
+release:
+  # Repo in which the release will be created.
+  # Default is extracted from the origin remote URL or empty if its private hosted.
+  github:
+  # You can disable this pipe in order to not upload any artifacts to
+  # GitHub.
+  # Defaults to false.
+  disable: false
+
+  # If set to true, will not auto-publish the release.
+  # Default is false.
+  draft: false
+
+  # If set to auto, will mark the release as not ready for production
+  # in case there is an indicator for this in the tag e.g. v1.0.0-rc1
+  # If set to true, will mark the release as not ready for production.
+  # Default is false.
+  prerelease: auto
+
+  # You can change the name of the GitHub release.
+  # Default is `{{.Tag}}`
+  name_template: "{{.ProjectName}}-v{{.Version}}"
+checksum:
+  name_template: 'checksums.txt'
+source:
+  enabled: true
+sboms:
+  - artifacts: archive
+  - id: source # Two different sbom configurations need two different IDs
+    artifacts: source
+signs:
+- cmd: cosign
+  env:
+  - COSIGN_EXPERIMENTAL=1
+  certificate: '${artifact}.pem'
+  args:
+    - sign-blob
+    - '--output-certificate=${certificate}'
+    - '--output-signature=${signature}'
+    - '${artifact}'
+  artifacts: checksum
+  output: true
+
 dockers:
   -
     use: buildx
-    goos: linux
     goarch: amd64
+    dockerfile: Dockerfile
     image_templates:
-    - "helium-diy/lightweight-dashboard:{{ .Tag }}"
-    - "helium-diy/lightweight-dashboard:v{{ .Major }}"
-    - "helium-diy/lightweight-dashboard:v{{ .Major }}.{{ .Minor }}"
-    - "helium-diy/lightweight-dashboard:latest"
-    - "gcr.io/helium-diy/lightweight-dashboard:{{ .Tag }}"
-    - "gcr.io/helium-diy/lightweight-dashboard:v{{ .Major }}"
-    - "gcr.io/helium-diy/lightweight-dashboard:v{{ .Major }}.{{ .Minor }}"
-    - "gcr.io/helium-diy/lightweight-dashboard:latest"
+    - "ghcr.io/heliumdiy/lightweight-dashboard:v{{ .Tag }}-amd64"
+    - "ghcr.io/heliumdiy/lightweight-dashboard:v{{ .Major }}-amd64"
+    - "ghcr.io/heliumdiy/lightweight-dashboard:v{{ .Major }}.{{ .Minor }}-amd64"
+    - "ghcr.io/heliumdiy/lightweight-dashboard:latest-amd64"
+    - "ghcr.io/heliumdiy/lightweight-dashboard:latest"
     build_flag_templates:
-    - "--pull"
-    - "--label=org.opencontainers.image.created={{.Date}}"
-    - "--label=org.opencontainers.image.title={{.ProjectName}}"
-    - "--label=org.opencontainers.image.revision={{.FullCommit}}"
-    - "--label=org.opencontainers.image.version={{.Version}}"
-    - "--platform=linux/amd64"
+    - --platform=linux/amd64
+    - --label=org.opencontainers.image.title={{ .ProjectName }}
+    - --label=org.opencontainers.image.description={{ .ProjectName }}
+    - --label=org.opencontainers.image.url=https://github.com/heliumdiy/{{ .ProjectName }}
+    - --label=org.opencontainers.image.source=https://github.com/heliumdiy/{{ .ProjectName }}
+    - --label=org.opencontainers.image.version={{ .Version }}
+    - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
+    - --label=org.opencontainers.image.revision={{ .FullCommit }}
   -
     use: buildx
-    goos: linux
     goarch: arm64
+    dockerfile: Dockerfile
     image_templates:
-    - "helium-diy/lightweight-dashboard:{{ .Tag }}"
-    - "helium-diy/lightweight-dashboard:v{{ .Major }}"
-    - "helium-diy/lightweight-dashboard:v{{ .Major }}.{{ .Minor }}"
-    - "helium-diy/lightweight-dashboard:latest"
-    - "gcr.io/helium-diy/lightweight-dashboard:{{ .Tag }}"
-    - "gcr.io/helium-diy/lightweight-dashboard:v{{ .Major }}"
-    - "gcr.io/helium-diy/lightweight-dashboard:v{{ .Major }}.{{ .Minor }}"
-    - "gcr.io/helium-diy/lightweight-dashboard:latest"
+    - "ghcr.io/heliumdiy/lightweight-dashboard:v{{ .Tag }}-arm64"
+    - "ghcr.io/heliumdiy/lightweight-dashboard:v{{ .Major }}-arm64"
+    - "ghcr.io/heliumdiy/lightweight-dashboard:v{{ .Major }}.{{ .Minor }}-arm64"
+    - "ghcr.io/heliumdiy/lightweight-dashboard:latest-arm64"
+    - "ghcr.io/heliumdiy/lightweight-dashboard:latest"
     build_flag_templates:
-    - "--pull"
-    - "--label=org.opencontainers.image.created={{.Date}}"
-    - "--label=org.opencontainers.image.title={{.ProjectName}}"
-    - "--label=org.opencontainers.image.revision={{.FullCommit}}"
-    - "--label=org.opencontainers.image.version={{.Version}}"
-    - "--platform=linux/arm64"
+    - --platform=linux/arm64/v8
+    - --label=org.opencontainers.image.title={{ .ProjectName }}
+    - --label=org.opencontainers.image.description={{ .ProjectName }}
+    - --label=org.opencontainers.image.url=https://github.com/heliumdiy/{{ .ProjectName }}
+    - --label=org.opencontainers.image.source=https://github.com/heliumdiy/{{ .ProjectName }}
+    - --label=org.opencontainers.image.version={{ .Version }}
+    - --label=org.opencontainers.image.created={{ time "2006-01-02T15:04:05Z07:00" }}
+    - --label=org.opencontainers.image.revision={{ .FullCommit }}
+docker_manifests:
+- name_template: ghcr.io/heliumdiy/{{ .ProjectName }}:v{{ .Tag }}
+  image_templates:
+  - "ghcr.io/heliumdiy/lightweight-dashboard:v{{ .Tag }}-amd64"
+  - "ghcr.io/heliumdiy/lightweight-dashboard:v{{ .Major }}-amd64"
+  - "ghcr.io/heliumdiy/lightweight-dashboard:v{{ .Major }}.{{ .Minor }}-amd64"
+  - "ghcr.io/heliumdiy/lightweight-dashboard:latest-amd64"
+  - "ghcr.io/heliumdiy/lightweight-dashboard:v{{ .Tag }}-arm64"
+  - "ghcr.io/heliumdiy/lightweight-dashboard:v{{ .Major }}-arm64"
+  - "ghcr.io/heliumdiy/lightweight-dashboard:v{{ .Major }}.{{ .Minor }}-arm64"
+  - "ghcr.io/heliumdiy/lightweight-dashboard:latest-arm64"
+docker_signs:
+  - cmd: cosign
+    env:
+    - COSIGN_EXPERIMENTAL=1
+    artifacts: images
+    output: true
+    args:
+    - 'sign'
+    - '${artifact}'
