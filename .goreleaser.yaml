@@ -1,6 +1,6 @@
 # This is an example .goreleaser.yml file with some sensible defaults.
 # Make sure to check the documentation at https://goreleaser.com
-project_name: lightweight-dashboard
+project_name: lightweight-dashboard-service
 before:
   hooks:
     # You may remove this if you don't use go modules.
@@ -72,11 +72,11 @@ dockers:
     goarch: amd64
     dockerfile: Dockerfile
     image_templates:
-    - "ghcr.io/heliumdiy/lightweight-dashboard:v{{ .Tag }}-amd64"
-    - "ghcr.io/heliumdiy/lightweight-dashboard:v{{ .Major }}-amd64"
-    - "ghcr.io/heliumdiy/lightweight-dashboard:v{{ .Major }}.{{ .Minor }}-amd64"
-    - "ghcr.io/heliumdiy/lightweight-dashboard:latest-amd64"
-    - "ghcr.io/heliumdiy/lightweight-dashboard:latest"
+    - "ghcr.io/heliumdiy/{{ .ProjectName }}:v{{ .Tag }}-amd64"
+    - "ghcr.io/heliumdiy/{{ .ProjectName }}:v{{ .Major }}-amd64"
+    - "ghcr.io/heliumdiy/{{ .ProjectName }}:v{{ .Major }}.{{ .Minor }}-amd64"
+    - "ghcr.io/heliumdiy/{{ .ProjectName }}:latest-amd64"
+    - "ghcr.io/heliumdiy/{{ .ProjectName }}:latest"
     build_flag_templates:
     - --platform=linux/amd64
     - --label=org.opencontainers.image.title={{ .ProjectName }}
@@ -91,11 +91,11 @@ dockers:
     goarch: arm64
     dockerfile: Dockerfile
     image_templates:
-    - "ghcr.io/heliumdiy/lightweight-dashboard:v{{ .Tag }}-arm64"
-    - "ghcr.io/heliumdiy/lightweight-dashboard:v{{ .Major }}-arm64"
-    - "ghcr.io/heliumdiy/lightweight-dashboard:v{{ .Major }}.{{ .Minor }}-arm64"
-    - "ghcr.io/heliumdiy/lightweight-dashboard:latest-arm64"
-    - "ghcr.io/heliumdiy/lightweight-dashboard:latest"
+    - "ghcr.io/heliumdiy/{{ .ProjectName }}:v{{ .Tag }}-arm64"
+    - "ghcr.io/heliumdiy/{{ .ProjectName }}:v{{ .Major }}-arm64"
+    - "ghcr.io/heliumdiy/{{ .ProjectName }}:v{{ .Major }}.{{ .Minor }}-arm64"
+    - "ghcr.io/heliumdiy/{{ .ProjectName }}:latest-arm64"
+    - "ghcr.io/heliumdiy/{{ .ProjectName }}:latest"
     build_flag_templates:
     - --platform=linux/arm64/v8
     - --label=org.opencontainers.image.title={{ .ProjectName }}
@@ -108,14 +108,14 @@ dockers:
 docker_manifests:
 - name_template: ghcr.io/heliumdiy/{{ .ProjectName }}:v{{ .Tag }}
   image_templates:
-  - "ghcr.io/heliumdiy/lightweight-dashboard:v{{ .Tag }}-amd64"
-  - "ghcr.io/heliumdiy/lightweight-dashboard:v{{ .Major }}-amd64"
-  - "ghcr.io/heliumdiy/lightweight-dashboard:v{{ .Major }}.{{ .Minor }}-amd64"
-  - "ghcr.io/heliumdiy/lightweight-dashboard:latest-amd64"
-  - "ghcr.io/heliumdiy/lightweight-dashboard:v{{ .Tag }}-arm64"
-  - "ghcr.io/heliumdiy/lightweight-dashboard:v{{ .Major }}-arm64"
-  - "ghcr.io/heliumdiy/lightweight-dashboard:v{{ .Major }}.{{ .Minor }}-arm64"
-  - "ghcr.io/heliumdiy/lightweight-dashboard:latest-arm64"
+  - "ghcr.io/heliumdiy/{{ .ProjectName }}:v{{ .Tag }}-amd64"
+  - "ghcr.io/heliumdiy/{{ .ProjectName }}:v{{ .Major }}-amd64"
+  - "ghcr.io/heliumdiy/{{ .ProjectName }}:v{{ .Major }}.{{ .Minor }}-amd64"
+  - "ghcr.io/heliumdiy/{{ .ProjectName }}:latest-amd64"
+  - "ghcr.io/heliumdiy/{{ .ProjectName }}:v{{ .Tag }}-arm64"
+  - "ghcr.io/heliumdiy/{{ .ProjectName }}:v{{ .Major }}-arm64"
+  - "ghcr.io/heliumdiy/{{ .ProjectName }}:v{{ .Major }}.{{ .Minor }}-arm64"
+  - "ghcr.io/heliumdiy/{{ .ProjectName }}:latest-arm64"
 docker_signs:
   - cmd: cosign
     env:
